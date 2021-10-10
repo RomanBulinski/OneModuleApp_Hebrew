@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataBaseService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">backend</a> &gt; <a href="index.source.html" class="el_package">com.example.backend.DataBase.application</a> &gt; <span class="el_source">DataBaseService.java</span></div><h1>DataBaseService.java</h1><pre class="source lang-java linenums">package com.example.backend.DataBase.application;
+
+import com.example.backend.letters.db.LetterJpaRepository;
+import com.example.backend.letters.domain.Letter;
+import com.example.backend.sentences.db.SentenceJpaRepository;
+import com.example.backend.sentences.domain.Sentence;
+import com.example.backend.words.db.WordJpaRepository;
+import com.example.backend.words.doamin.Word;
+import com.opencsv.bean.CsvBindByName;
+import com.opencsv.bean.CsvToBean;
+import com.opencsv.bean.CsvToBeanBuilder;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
+@Service
+<span class="fc" id="L23">@AllArgsConstructor</span>
+public class DataBaseService {
+
+    private final LetterJpaRepository letterJpaRepository;
+    private final WordJpaRepository wordJpaRepository;
+    private final SentenceJpaRepository sentenceJpaRepository;
+
+    public void clearAllDB(){
+<span class="fc" id="L31">        letterJpaRepository.deleteAll();</span>
+<span class="fc" id="L32">        wordJpaRepository.deleteAll();</span>
+<span class="fc" id="L33">        sentenceJpaRepository.deleteAll();</span>
+<span class="fc" id="L34">    }</span>
+
+    public void loadLettersFromCSVInDB() {
+<span class="fc" id="L37">        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ClassPathResource(&quot;letters.csv&quot;).getInputStream()))) {</span>
+<span class="fc" id="L38">            CsvToBean&lt;CsvLetter&gt; build = new CsvToBeanBuilder&lt;CsvLetter&gt;(reader)</span>
+<span class="fc" id="L39">                    .withType(CsvLetter.class)</span>
+<span class="fc" id="L40">                    .withIgnoreLeadingWhiteSpace(true)</span>
+<span class="fc" id="L41">                    .build();</span>
+<span class="fc" id="L42">            build.stream().forEach(this::initLetter);</span>
+<span class="nc" id="L43">        } catch (IOException e) {</span>
+<span class="nc" id="L44">            throw new IllegalStateException(&quot;Failed to parse CSV file&quot;, e);</span>
+<span class="fc" id="L45">        }</span>
+<span class="fc" id="L46">    }</span>
+
+    public void loadSentencesFromCSVToDB() {
+<span class="fc" id="L49">        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ClassPathResource(&quot;sentences.csv&quot;).getInputStream()))) {</span>
+<span class="fc" id="L50">            CsvToBean&lt;CsvElement&gt; build = new CsvToBeanBuilder&lt;CsvElement&gt;(reader)</span>
+<span class="fc" id="L51">                    .withType(CsvElement.class)</span>
+<span class="fc" id="L52">                    .withIgnoreLeadingWhiteSpace(true)</span>
+<span class="fc" id="L53">                    .build();</span>
+<span class="fc" id="L54">            build.stream().forEach(this::initSentences);</span>
+<span class="nc" id="L55">        } catch (IOException e) {</span>
+<span class="nc" id="L56">            throw new IllegalStateException(&quot;Failed to parse CSV file&quot;, e);</span>
+<span class="fc" id="L57">        }</span>
+<span class="fc" id="L58">    }</span>
+
+    public void loadWordsFromCSVToDB() {
+<span class="fc" id="L61">        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ClassPathResource(&quot;words.csv&quot;).getInputStream()))) {</span>
+<span class="fc" id="L62">            CsvToBean&lt;CsvElement&gt; build = new CsvToBeanBuilder&lt;CsvElement&gt;(reader)</span>
+<span class="fc" id="L63">                    .withType(CsvElement.class)</span>
+<span class="fc" id="L64">                    .withIgnoreLeadingWhiteSpace(true)</span>
+<span class="fc" id="L65">                    .build();</span>
+<span class="fc" id="L66">            build.stream().forEach(this::initWord);</span>
+<span class="nc" id="L67">        } catch (IOException e) {</span>
+<span class="nc" id="L68">            throw new IllegalStateException(&quot;Failed to parse CSV file&quot;, e);</span>
+<span class="fc" id="L69">        }</span>
+<span class="fc" id="L70">    }</span>
+
+    private void initLetter(CsvLetter csvLetter) {
+<span class="fc" id="L73">        Letter letter = new Letter(</span>
+<span class="fc" id="L74">                csvLetter.getLetterp(),</span>
+<span class="fc" id="L75">                csvLetter.getLetterh(),</span>
+<span class="fc" id="L76">                csvLetter.getNazwa(),</span>
+<span class="fc" id="L77">                csvLetter.getWartoscnumeryczna(),</span>
+<span class="fc" id="L78">                csvLetter.getOpis(),</span>
+<span class="fc" id="L79">                csvLetter.getPronunciation()</span>
+        );
+<span class="fc" id="L81">        letterJpaRepository.save(letter);</span>
+<span class="fc" id="L82">    }</span>
+
+    private void initWord(CsvElement csvWord) {
+<span class="fc" id="L85">        Word word = new Word(</span>
+<span class="fc" id="L86">                csvWord.getHebrew(),</span>
+<span class="fc" id="L87">                csvWord.getPronunciation(),</span>
+<span class="fc" id="L88">                csvWord.getPolish(),</span>
+<span class="fc" id="L89">                csvWord.getDescription()</span>
+        );
+<span class="fc" id="L91">        wordJpaRepository.save(word);</span>
+<span class="fc" id="L92">    }</span>
+
+    private void initSentences(CsvElement csvSentence) {
+<span class="fc" id="L95">        Sentence sentence = new Sentence(</span>
+<span class="fc" id="L96">                csvSentence.getHebrew(),</span>
+<span class="fc" id="L97">                csvSentence.getPronunciation(),</span>
+<span class="fc" id="L98">                csvSentence.getPolish(),</span>
+<span class="fc" id="L99">                csvSentence.getDescription()</span>
+        );
+<span class="fc" id="L101">        sentenceJpaRepository.save(sentence);</span>
+<span class="fc" id="L102">    }</span>
+
+    //This class is common for words and sentences
+<span class="pc bnc" id="L105" title="All 38 branches missed.">    @Data</span>
+<span class="nc" id="L106">    @AllArgsConstructor</span>
+<span class="fc" id="L107">    @NoArgsConstructor</span>
+    public static class CsvElement {
+        @CsvBindByName
+<span class="fc" id="L110">        private String hebrew;</span>
+        @CsvBindByName
+<span class="fc" id="L112">        private String pronunciation;</span>
+        @CsvBindByName
+<span class="fc" id="L114">        private String polish;</span>
+        @CsvBindByName
+<span class="fc" id="L116">        private String description;</span>
+    }
+
+<span class="pc bnc" id="L119" title="All 54 branches missed.">    @Data</span>
+<span class="nc" id="L120">    @AllArgsConstructor</span>
+<span class="fc" id="L121">    @NoArgsConstructor</span>
+    public static class CsvLetter {
+        @CsvBindByName
+<span class="fc" id="L124">        private String letterp;</span>
+        @CsvBindByName
+<span class="fc" id="L126">        private String letterh;</span>
+        @CsvBindByName
+<span class="fc" id="L128">        private String nazwa;</span>
+        @CsvBindByName
+<span class="fc" id="L130">        private Long wartoscnumeryczna;</span>
+        @CsvBindByName
+<span class="fc" id="L132">        private String opis;</span>
+        @CsvBindByName
+<span class="fc" id="L134">        private String pronunciation;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="pl"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LetterService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">backend</a> &gt; <a href="index.source.html" class="el_package">com.example.backend.letters.application</a> &gt; <span class="el_source">LetterService.java</span></div><h1>LetterService.java</h1><pre class="source lang-java linenums">package com.example.backend.letters.application;
+
+import com.example.backend.letters.application.port.LetterUseCase;
+import com.example.backend.letters.db.LetterJpaRepository;
+import com.example.backend.letters.domain.Letter;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+<span class="fc" id="L12">@AllArgsConstructor</span>
+public class LetterService implements LetterUseCase {
+
+    private final LetterJpaRepository letterRepository;
+
+    @Override
+    public List&lt;Letter&gt; findAllLetters() {
+<span class="nc" id="L19">         return letterRepository.findAll();</span>
+    }
+
+//    @Override
+//    public Letter delete(long id) {
+//        Letter letter = letterRepository.findById(id).get();
+//        if(letter != null){
+//            letterRepository.delete(letter);
+//        }
+//        return letter;
+//    }
+
+//    @Override
+//    public Owner create(Owner owner) {
+//        return ownerRepository.save(owner);
+//    }
+
+//    @Override
+//    public Owner findById(int id) {
+//        long longId = (long) id;
+//        return ownerRepository.getOne(longId);
+//    }
+
+//    @Override
+//    public Owner update(Owner owner, long id) {
+//        Owner ownerFromRepository = ownerRepository.findById(id).get();
+//        if (ownerFromRepository != null) {
+//            owner.setId(id);
+//            ownerRepository.save(owner);
+//        }else{
+//            return null;
+//        }
+//        return owner;
+//    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
